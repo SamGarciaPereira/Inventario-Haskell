@@ -3,15 +3,15 @@ module Types where
 import qualified Data.Map as Map
 import Data.Time (UTCTime)
 
--- ADT para o tipo de ação registrada no sistema
+-- tipo algébrico de dados para representar as operações possíveis no sistema de auditoria
 data AcaoLog = Add | Remove | Update | QueryFail 
     deriving (Show, Read, Eq)
 
--- ADT para o resultado da operação. 'Falha' carrega o motivo do erro.
+-- construtor de tipo para o resultado da operação, onde a falha armazena uma string com a causa
 data StatusLog = Sucesso | Falha String 
     deriving (Show, Read, Eq)
 
--- | O modelo principal do Item do inventário
+-- | estrutura que define os atributos e campos de um produto do inventário
 data Item = Item 
     { itemID     :: String
     , nome       :: String
@@ -19,13 +19,13 @@ data Item = Item
     , categoria  :: String
     } deriving (Show, Read, Eq)
 
--- | Sinônimo de tipo: O inventário é um Dicionário (Map) mapeando a String (itemID) para o Item
+-- | definição de um sinônimo de tipo estruturado como um mapa indexado pelo id do item
 type Inventario = Map.Map String Item
 
--- | Registro para cada entrada no arquivo de auditoria
+-- | tipo de dado que modela uma entrada de evento a ser gravada no histórico de logs
 data LogEntry = LogEntry
     { timestamp :: UTCTime
     , acao      :: AcaoLog
-    , detalhes  :: String     -- O Dev 2 deve colocar o itemID como a primeira palavra aqui (ex: "IT01 adicionado com sucesso")
+    , detalhes  :: String -- string explicativa iniciada pelo id do item para compatibilidade
     , status    :: StatusLog
     } deriving (Show, Read, Eq)

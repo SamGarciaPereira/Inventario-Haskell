@@ -4,33 +4,43 @@ import Types
 import Data.List (isInfixOf, group, sort, maximumBy)
 import Data.Ord (comparing)
 
--- Analisa a lista completa de logs e retorna apenas as operações que falharam.
+-- | filtra a lista de logs para retornar apenas os registros que falharam
 logsDeErro :: [LogEntry] -> [LogEntry]
 logsDeErro = filter ehFalha
   where
-    -- Faz pattern matching no statusLog para identificar o construtor 'Falha'
+    -- avaliação por correspondência de padrões para identificar o construtor de falha
     ehFalha log = case status log of
         Falha _ -> True
         _       -> False
 
--- Filtra o histórico procurando qualquer log que mencione o ID buscado nos detalhes.
+-- | varre o histórico aplicando um filtro para encontrar o id buscado dentro do campo de detalhes
 historicoPorItem :: String -> [LogEntry] -> [LogEntry]
 historicoPorItem idBuscado = filter (\log -> idBuscado `isInfixOf` detalhes log)
 
--- Identifica qual item teve o maior volume de transações de sucesso.
--- Assume que a primeira palavra na string 'detalhes' do log é o itemID 
+-- | identifica qual identificador de item teve a maior recorrência em operações bem-sucedidas
 itemMaisMovimentado :: [LogEntry] -> String
 itemMaisMovimentado [] = "Nenhum log registrado."
 itemMaisMovimentado logs = 
-    let -- Mantém apenas os logs que deram Sucesso
+    let -- remove todas as entradas que não possuem status de sucesso
         logsSucesso = filter (\l -> status l == Sucesso) logs
 
-        -- Extrai a primeira palavra dos detalhes de cada log (ID)
-        idsMovimentados = map (head . words . detalhes) logsSucesso
+        -- função auxiliar para extrair de forma segura o primeiro elemento gerado por words
+        pegarPrimeiraPalavra :: String -> String
+        pegarPrimeiraPalavra texto = case words texto of
+            (primeira:_) -> primeira
+            []           -> "ID_Desconhecido"
 
-        -- Agrupa IDs idênticos em sublistas: ["IT01", "IT01"], ["IT02"]
+        -- aplica a função em mapeamento sobre a lista para isolar os identificadores
+        idsMovimentados = map (pegarPrimeiraPalavra . detalhes) logsSucesso
+
+        -- agrupamento dos identificadores após ordenação para aglutinar chaves idênticas
         grupos = group (sort idsMovimentados)
 
     in if null idsMovimentados 
-       then "Nenhuma movimentação com sucesso encontrada." 
-       else head (maximumBy (comparing length) grupos) -- Retorna o elemento da sublista mais longa
+       then "Nenhuma movimentacao com sucesso encontrada." 
+       else 
+           -- determinação do subconjunto com maior número de elementos e casamento de padrões no retorno
+           let maiorGrupo = maximumBy (comparing length) grupos
+           in case maiorGrupo of
+               (itemMaisFrequente:_) -> itemMaisFrequente
+               []                    -> "Erro_Inesperado"
