@@ -1,7 +1,13 @@
+# Sistema de Gestão de Inventário em Haskell
+
+**Instituição:** Pontifícia Universidade Católica do Paraná (PUCPR)
+**Disciplina:** Programação Lógica e Funcional
+**Professor:** Eduardo Lino
+
 ## Integrantes
-- Abílio Pedro Alcântara Mota Batista
-- Beatriz Ceciliato Robaskievicz da Cunha
-- Samuel Garcia Pereira
+- Abílio Pedro Alcântara Mota Batista | Github: @oabilio
+- Beatriz Ceciliato Robaskievicz da Cunha | Github: @biacrcunha
+- Samuel Garcia Pereira | Github: @SamGarciaPereira
 
 ## Link Compilador Online (GDB)
 https://onlinegdb.com/fkprl4S9F
